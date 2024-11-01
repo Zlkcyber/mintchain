@@ -8,7 +8,7 @@ import random
 
 init(autoreset=True)
 def prompt_auto_steal():
-    user_input = input("Would you like to enable auto steal? (y/yes - n/no): ").strip().lower()
+    user_input = input(f"{Fore.YELLOW}Would you like to enable auto steal? (y/yes - n/no): ").strip().lower()
     if user_input in ['yes', 'y']:
         return True
     elif user_input in ['no', 'n']:
