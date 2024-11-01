@@ -31,6 +31,12 @@ This script interacts with the MintChain API to automate certain tasks, includin
     }
     ```
 
+## How to get access token
+- First login to [Mintchain Dashboard](https://www.mintchain.io/mint-forest?inviteCode=4AAAD2AE)
+- Press F12 to open console
+- find and click Network 
+- Last find user-info and copy your `Authorization`, copy from `eyjhb......`
+![alt text](image.png)
 ## Installation
 
 1. Clone this repository:
