@@ -7,6 +7,7 @@ This script interacts with the MintChain API to automate certain tasks, includin
 - Auto Daily sign in.
 - Auto Spins the turntable up to 10 times daily.
 - Auto Injects energy to the Green Id.
+- auto Stealing.
 
 ## Prerequisites
 
