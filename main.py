@@ -4,9 +4,26 @@ import json
 from web3 import Web3
 from colorama import Fore, Style, init
 from utils.banner import banner 
-init(autoreset=True)
+import random
 
+init(autoreset=True)
+def prompt_auto_steal():
+    user_input = input("Would you like to enable auto steal? (y/yes - n/no): ").strip().lower()
+    if user_input in ['yes', 'y']:
+        return True
+    elif user_input in ['no', 'n']:
+        return False
+    else:
+        print("Invalid input. Please enter 'yes' or 'no'.")
+        return prompt_auto_steal()  
 print(Fore.MAGENTA + Style.BRIGHT + banner + Style.RESET_ALL)
+auto_steal_enabled = prompt_auto_steal()
+if auto_steal_enabled:
+    print("Auto steal is enabled.")
+else:
+    print("Auto steal is disabled.")
+
+
 def load_private_keys_tokens(file_path):
     with open(file_path, 'r') as file:
         data = json.load(file)
@@ -27,6 +44,9 @@ def colay(url, method, headers, payload_data=None):
     except Exception as error:
         print(f"{Fore.RED}An error occurred: {error}")
         return None
+    
+def generate_random_id():
+    return random.randint(1, 440506)
 
 def send_transactions(private_key, recipient_address, sender_address, hex_data, web3):
     
@@ -70,6 +90,8 @@ def main():
                 if profile:
                     balance = profile['result']['energy']
                     treeId = profile['result']['treeId']
+                    stealCount = profile['result']['stealCount']
+                    
                     print(f"{Fore.CYAN}Tree ID: {treeId} | Balance: {balance}")
 
                     counts = colay(f"{ApiUrl}/turntable/count", 'GET', headers)
@@ -105,6 +127,30 @@ def main():
                         else:
                             print(f"{Fore.RED}Failed to inject energy.")
                             
+                    while stealCount < 8 and auto_steal_enabled:
+                        random_id = generate_random_id()
+                        check_acc = colay(f"https://www.mintchain.io/api/tree/steal/energy-list?id={random_id}", 'GET', headers)
+                        code = check_acc['code']
+                        if code == 10001:
+                            print(f"This Account ID {treeId} cannot stealing,")
+                            break
+                        
+                        elif check_acc and check_acc.get('result'):
+                            stealable = check_acc['result'][0].get('stealable', False) 
+                                                                                    
+                            if stealable:
+                                steal = colay(f"https://www.mintchain.io/api/tree/get-forest-proof?type=Steal&id={random_id}", 'GET', headers)
+                                print(f"Steal action initiated for ID: {random_id}")
+                                
+                                if steal:
+                                    hex_data = steal['result']['tx']  
+                                    print("send transactions for stealing...")
+                                    send_transactions(private_key, recipient_address, sender_address, hex_data, web3)
+                            else:
+                                print("Energy not stealable.")
+                        else:
+                            print("No result found for this id")
+
             print(f"{Fore.MAGENTA}All accounts have been processed. Cooldown...")  
             time.sleep(60 * 60)
         
